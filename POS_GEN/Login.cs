@@ -79,7 +79,6 @@ namespace POS_GEN
             Application.Exit();
         }
 
-
         private void btnadd_Click(object sender, EventArgs e)
         {
             SQLiteConnection sqlcon = new SQLiteConnection(cs);
