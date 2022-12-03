@@ -5,17 +5,21 @@ using System.Configuration;
 using System.Data;
 //using System.Data.SqlClient;
 using System.Data.SQLite;
+using System.Data.SQLite.EF6;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.Entity.Core.Common;
 
 namespace POS_GEN
 {
     public partial class Login : Form
     {
-        string cs = ConfigurationManager.ConnectionStrings["POS_GEN.Properties.Settings.POS_GenConnectionString"].ConnectionString;
+        //string cs = ConfigurationManager.ConnectionStrings["POS_GEN.Properties.Settings.POS_GenConnectionString"].ConnectionString;
+        //string cs = ConfigurationManager.AppSettings["cnStr"].ToString();
+
         public Login()
         {
             InitializeComponent();
@@ -25,6 +29,9 @@ namespace POS_GEN
             panel1.Parent = pictureBox1;
             panel1.Location = pos;
             panel1.BackColor = Color.Transparent;
+
+            label2.Text = CVars.getAppName;
+            label5.Text = CVars.getEmailID;
         }
 
         public static string username;
@@ -77,12 +84,13 @@ namespace POS_GEN
         private void btnclose_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
 
+            SQLiteDataAdapter cn = null;
+        }
 
         private void btnadd_Click(object sender, EventArgs e)
         {
-            SQLiteConnection sqlcon = new SQLiteConnection(cs);
+            SQLiteConnection sqlcon = new SQLiteConnection();
             string chkquery = "SELECT TOP 1 EndDate FROM EXPDate ORDER BY ID DESC";
             SQLiteCommand sqlcmd = new SQLiteCommand(chkquery, sqlcon);
             SQLiteDataAdapter sqlsda = new SQLiteDataAdapter(sqlcmd);
@@ -101,7 +109,12 @@ namespace POS_GEN
             }
             else
             {
-                this.user_InfoTableAdapter.FillByid(this.dataSet1.User_Info, usernameTextBox.Text, passwordTextBox.Text);
+                //this.user_InfoTableAdapter.FillByid(this.dataSet1.User_Info, usernameTextBox.Text, passwordTextBox.Text);
+
+                if (UserLogin())
+                {
+
+                }
 
                 int noofrec = 0;
                 noofrec = dataSet1.User_Info.Rows.Count;
@@ -135,21 +148,60 @@ namespace POS_GEN
             }
         }
 
+
+        private bool UserLogin()
+        {
+            CExecuteQry obj_qry = new CExecuteQry();
+
+            string qry = "SELECT User_ID, Username, Password, Role FROM User_Info WHERE Username = '" + usernameTextBox.Text + "' AND Password = '" + passwordTextBox.Text + "'";
+
+            DataSet ds = qry.ExecuteQuery(qry);
+
+            if (ds != null)
+            {
+                if (ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        //this.Close();
+
+                        //frmMain obj_frm = new frmMain();
+                        //obj_frm.Show();
+
+                        return true;
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+        }
+
         private void passwordTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-
             if (e.KeyCode == Keys.Enter)
             {
-                SendKeys.Send("{ENTER}");
-
-                Button button = sender as Button;
-
                 SQLiteConnection sqlcon = new SQLiteConnection(cs);
-                string chkquery = "SELECT TOP 1 EndDate FROM EXPDate ORDER BY ID DESC";
+                //string chkquery = "SELECT TOP 1 EndDate FROM EXPDate ORDER BY ID DESC";
+                string chkquery = "SELECT max(EndDate) EndDate FROM EXPDate ORDER BY ID DESC";
                 SQLiteCommand sqlcmd = new SQLiteCommand(chkquery, sqlcon);
                 SQLiteDataAdapter sqlsda = new SQLiteDataAdapter(sqlcmd);
                 DataTable sqldt = new DataTable();
-                sqlsda.Fill(sqldt);
+                //sqlsda.Fill(sqldt);
 
                 DateTime date1 = DateTime.UtcNow;
                 TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
@@ -198,9 +250,16 @@ namespace POS_GEN
 
                     }
                 }
+            }
 
+        }
+
+        private void Login_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\r')
+            {
+                SendKeys.Send("{TAB}");
             }
         }
     }
 }
- 

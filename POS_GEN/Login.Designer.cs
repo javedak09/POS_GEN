@@ -100,6 +100,7 @@
             this.tableAdapterManager.BackupDataSetBeforeUpdate = false;
             this.tableAdapterManager.Category_InfoTableAdapter = null;
             this.tableAdapterManager.CustomerInfoTableAdapter = null;
+            this.tableAdapterManager.Daily_Sale_AmountTableAdapter = null;
             this.tableAdapterManager.Expense_InfoTableAdapter = null;
             this.tableAdapterManager.LedgerProcedureTableAdapter = null;
             this.tableAdapterManager.PNLPurchaseTableAdapter = null;
@@ -282,7 +283,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SteelBlue;
-            this.ClientSize = new System.Drawing.Size(1126, 423);
+            this.ClientSize = new System.Drawing.Size(1126, 421);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.btnclose);
             this.Controls.Add(this.label6);
@@ -293,10 +294,12 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.pictureBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.KeyPreview = true;
             this.Name = "Login";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";
             this.Load += new System.EventHandler(this.Login_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Login_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.user_InfoBindingSource)).EndInit();
             this.panel1.ResumeLayout(false);

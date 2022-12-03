@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace POS_GEN
 {
-   public class DataAccess
+    public class DataAccess
     {
         string ConnectionString;
 
         public DataAccess()
         {
-            ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["POS_GEN"].ConnectionString;
+            //ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["POS_GEN"].ConnectionString;
+            ConnectionString = System.Configuration.ConfigurationManager.AppSettings["cnStr"].ToString();
         }
 
     }
