@@ -12,6 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.Entity.Core.Common;
+using POS_GEN.DAL;
+using POS_GEN.Models;
+using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 
 namespace POS_GEN
 {
@@ -84,18 +87,18 @@ namespace POS_GEN
         private void btnclose_Click(object sender, EventArgs e)
         {
             Application.Exit();
-
             SQLiteDataAdapter cn = null;
         }
 
         private void btnadd_Click(object sender, EventArgs e)
         {
-            SQLiteConnection sqlcon = new SQLiteConnection();
-            string chkquery = "SELECT TOP 1 EndDate FROM EXPDate ORDER BY ID DESC";
-            SQLiteCommand sqlcmd = new SQLiteCommand(chkquery, sqlcon);
+            CConnection cn = new CConnection();
+            string chkquery = "SELECT max(EndDate) EndDate FROM EXPDate ORDER BY ID DESC";
+            SQLiteCommand sqlcmd = new SQLiteCommand(chkquery, cn.cn);
             SQLiteDataAdapter sqlsda = new SQLiteDataAdapter(sqlcmd);
             DataTable sqldt = new DataTable();
             sqlsda.Fill(sqldt);
+
 
             DateTime date1 = DateTime.UtcNow;
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
@@ -113,37 +116,40 @@ namespace POS_GEN
 
                 if (UserLogin())
                 {
+                    //recby = usernameTextBox.Text;
+                    ///roleby = roleComboBox.Text;
 
-                }
-
-                int noofrec = 0;
-                noofrec = dataSet1.User_Info.Rows.Count;
-
-                if (noofrec > 0)
-                {
-                    recby = usernameTextBox.Text;
-                    roleby = roleComboBox.Text;
-                    if (roleComboBox.Text == "Admin")
+                    if (CVars.setUserRole == "Admin")
                     {
-                        string title = "Login Successfull";
-                        MessageBox.Show("Logging in as Admin.", title);
                         AdminPanel AP = new AdminPanel();
                         AP.Show();
                         this.Hide();
                     }
-                    else if (roleComboBox.Text == "User")
+                    else if (CVars.setUserRole == "User")
                     {
-                        string title = "Login Successfull";
-                        MessageBox.Show("Logging in as User.", title);
                         UserPanel UP = new UserPanel();
                         UP.Show();
                         this.Hide();
                     }
-                }
-                else
-                {
-                    string title = "Invalid Login";
-                    MessageBox.Show("Invalid Username or Password", title);
+
+
+                    //if (roleComboBox.Text == "Admin")
+                    //{
+                    //    string title = "Login Successfull";
+                    //    MessageBox.Show("Logging in as Admin.", title);
+                    //    AdminPanel AP = new AdminPanel();
+                    //    AP.Show();
+                    //    this.Hide();
+                    //}
+                    //else if (roleComboBox.Text == "User")
+                    //{
+                    //    string title = "Login Successfull";
+                    //    MessageBox.Show("Logging in as User.", title);
+                    //    UserPanel UP = new UserPanel();
+                    //    UP.Show();
+                    //    this.Hide();
+                    //}
+
                 }
             }
         }
@@ -151,43 +157,70 @@ namespace POS_GEN
 
         private bool UserLogin()
         {
-            CExecuteQry obj_qry = new CExecuteQry();
+            bool IsExists = false;
 
-            string qry = "SELECT User_ID, Username, Password, Role FROM User_Info WHERE Username = '" + usernameTextBox.Text + "' AND Password = '" + passwordTextBox.Text + "'";
-
-            DataSet ds = qry.ExecuteQuery(qry);
-
-            if (ds != null)
+            using (CDBContext ctx = new CDBContext())
             {
-                if (ds.Tables.Count > 0)
+                var user = ctx.Users.Where(u => u.Username == usernameTextBox.Text && u.Password == passwordTextBox.Text).SingleOrDefault();
+
+                if (user != null)
                 {
-                    if (ds.Tables[0].Rows.Count > 0)
-                    {
-                        //this.Close();
-
-                        //frmMain obj_frm = new frmMain();
-                        //obj_frm.Show();
-
-                        return true;
-
-                    }
-                    else
-                    {
-                        MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return false;
-                    }
+                    CVars.setUserRole = user.Role;
+                    IsExists = true;
                 }
                 else
                 {
-                    MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
+                    MessageBox.Show("Invalid username or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    usernameTextBox.SelectAll();
+                    IsExists = false;
+                    usernameTextBox.Focus();
                 }
-            }
-            else
-            {
-                MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
+            };
+
+            return IsExists;
+        }
+
+
+
+        private void UserLogin_old()
+        {
+            //CExecuteQry obj_qry = new CExecuteQry();
+
+            //string qry = "SELECT User_ID, Username, Password, Role FROM User_Info WHERE Username = '" + usernameTextBox.Text + "' AND Password = '" + passwordTextBox.Text + "'";
+
+            //DataSet ds = obj_qry.ExecuteQuery(qry);
+
+            //if (ds != null)
+            //{
+            //    if (ds.Tables.Count > 0)
+            //    {
+            //        if (ds.Tables[0].Rows.Count > 0)
+            //        {
+            //            this.Close();
+
+            //            UserPanel obj_frm = new UserPanel();
+            //            obj_frm.Show();
+
+            //            return true;
+
+            //        }
+            //        else
+            //        {
+            //            MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            return false;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //        return false;
+            //    }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Invalid user id or password", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return false;
+            //}
 
         }
 
@@ -195,18 +228,25 @@ namespace POS_GEN
         {
             if (e.KeyCode == Keys.Enter)
             {
-                SQLiteConnection sqlcon = new SQLiteConnection(cs);
+                //SQLiteConnection sqlcon = new SQLiteConnection(cs);
                 //string chkquery = "SELECT TOP 1 EndDate FROM EXPDate ORDER BY ID DESC";
                 string chkquery = "SELECT max(EndDate) EndDate FROM EXPDate ORDER BY ID DESC";
-                SQLiteCommand sqlcmd = new SQLiteCommand(chkquery, sqlcon);
-                SQLiteDataAdapter sqlsda = new SQLiteDataAdapter(sqlcmd);
-                DataTable sqldt = new DataTable();
+
+                CExecuteQry qry = new CExecuteQry();
+                //DataSet ds = qry.ExecuteQuery(chkquery);
+
+
+
+
+                //SQLiteCommand sqlcmd = new SQLiteCommand(chkquery, sqlcon);
+                //SQLiteDataAdapter sqlsda = new SQLiteDataAdapter(sqlcmd);
+                //DataTable sqldt = new DataTable();
                 //sqlsda.Fill(sqldt);
 
                 DateTime date1 = DateTime.UtcNow;
                 TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
                 DateTime date2 = TimeZoneInfo.ConvertTime(date1, tz);
-                DateTime expdate = Convert.ToDateTime(sqldt.Rows[0]["EndDate"].ToString());
+                DateTime expdate = Convert.ToDateTime("");
 
                 if (date2 >= expdate)
                 {

@@ -19,6 +19,7 @@ namespace POS_GEN
 
             try
             {
+                cn = new CConnection();
                 da = new SQLiteDataAdapter(qry, cn.cn);
                 ds = new DataSet();
                 da.Fill(ds);
@@ -26,7 +27,7 @@ namespace POS_GEN
 
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Blank Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Exception Occur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             finally

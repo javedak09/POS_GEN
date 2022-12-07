@@ -15,6 +15,7 @@ namespace POS_GEN
 
         static string userid;
         static string username;
+        static string userRole;
 
 
         static Form frmlogin;
@@ -70,6 +71,20 @@ namespace POS_GEN
             set
             {
                 username = value;
+            }
+        }
+
+
+        public static String setUserRole
+        {
+            get
+            {
+                return userRole;
+            }
+
+            set
+            {
+                userRole = value;
             }
         }
 
