@@ -11,9 +11,9 @@ namespace POS_GEN
 {
     internal class CExecuteQry
     {
-        public DataSet ExecuteQuery(string qry)
+        public DataTable ExecuteQuery(string qry)
         {
-            DataSet ds = null;
+            DataTable dt = null;
             SQLiteDataAdapter da = null;
             CConnection cn = null;
 
@@ -21,8 +21,8 @@ namespace POS_GEN
             {
                 cn = new CConnection();
                 da = new SQLiteDataAdapter(qry, cn.cn);
-                ds = new DataSet();
-                da.Fill(ds);
+                dt = new DataTable();
+                da.Fill(dt);
             }
 
             catch (Exception ex)
@@ -36,7 +36,7 @@ namespace POS_GEN
                 cn = null;
             }
 
-            return ds;
+            return dt;
         }
     }
 }

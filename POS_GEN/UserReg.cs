@@ -1,4 +1,5 @@
-﻿using System;
+﻿using POS_GEN.DataSet1TableAdapters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -25,9 +26,24 @@ namespace POS_GEN
 
         }
 
+
+        private DataTable getUserData()
+        {
+            CExecuteQry obj_qry = new CExecuteQry();
+            string qry = "SELECT User_ID, Username, Password, Role FROM User_Info WHERE Username = '" + usernameTextBox.Text + "' AND Password = '" + passwordTextBox.Text + "'";
+            DataTable dt = obj_qry.ExecuteQuery(qry);
+
+            return dt;
+        }
+
+
         private void UserReg_Load(object sender, EventArgs e)
         {
             // TODO: This line of code loads data into the 'dataSet1.User_Info' table. You can move, or remove it, as needed.
+            //this.user_InfoTableAdapter.Fill(this.dataSet1.User_Info);
+
+            dataSet1.User_Info = (dataSet1.User_Info) getUserData();
+
             this.user_InfoTableAdapter.Fill(this.dataSet1.User_Info);
 
             user_IDTextBox.Enabled = false;
@@ -36,8 +52,6 @@ namespace POS_GEN
             roleComboBox.Enabled = false;
 
             btnsave.Enabled = false;
-
-
         }
 
         private void btnadd_Click(object sender, EventArgs e)

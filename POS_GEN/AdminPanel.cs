@@ -43,15 +43,13 @@ namespace POS_GEN
             //}
 
             this.BackgroundImage = global::POS_GEN.Properties.Resources.shakes;
-                
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-
 
         }
 
         private void adToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
 
 
         }
@@ -72,7 +70,7 @@ namespace POS_GEN
 
         private void sdfToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
         }
 
         private void expenseManagementToolStripMenuItem_Click(object sender, EventArgs e)
@@ -147,17 +145,17 @@ namespace POS_GEN
 
         private void saleReturnToolStripMenuItem_Click(object sender, EventArgs e)
         {
-          
+
         }
 
         private void saleLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
         }
 
         private void saleInformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+
         }
 
         private void titleOfAccountManagementToolStripMenuItem_Click(object sender, EventArgs e)

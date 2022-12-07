@@ -27,7 +27,9 @@ namespace POS_GEN
 
         private void AddCustomer_Load(object sender, EventArgs e)
         {
-            // TODO: This line of code loads data into the 'dataSet1.CustomerInfo' table. You can move, or remove it, as needed.
+            // TODO: This line of code loads data into the 'dataSet1.CustomerInfo' table. You can move, or remove it, as needed.            
+            //this.customerInfoTableAdapter.Fill(this.dataSet1.CustomerInfo);
+            
             this.customerInfoTableAdapter.Fill(this.dataSet1.CustomerInfo);
 
             customerIDTextBox.Enabled = false;
